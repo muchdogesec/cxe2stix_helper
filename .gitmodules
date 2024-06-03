@@ -1,0 +1,8 @@
+[submodule "cve2stix"]
+	path = cve2stix
+	url = https://github.com/muchdogesec/cve2stix/
+	branch = main
+[submodule "cpe2stix"]
+	path = cpe2stix
+	url = https://github.com/muchdogesec/cpe2stix/
+	branch = main

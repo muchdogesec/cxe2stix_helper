@@ -1,0 +1,2 @@
+-r cpe2stix/requirements.txt
+-r cve2stix/requirements.txt
