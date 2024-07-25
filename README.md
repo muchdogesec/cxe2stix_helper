@@ -158,10 +158,6 @@ python3 cxe2stix_helper.py \
 
 The earliest CPEs have a last modified date in 2007.
 
-### Download the data
-
-Make life easy for yourself -- [we have also made the data produced by the above commands available to download freely in our cti_knowledge_base_store repository](https://github.com/muchdogesec/cti_knowledge_base_store).
-
 ## Git submodule use
 
 We try and keep this repo in sync with the remote cve2stix / cpe2stix repos used as Git submodules when changes happen.
