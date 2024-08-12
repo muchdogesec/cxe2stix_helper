@@ -1,0 +1,68 @@
+name: Upload to R2 Daily
+run-name: ${{ github.actor }} is running cxe2stix
+on:
+    schedule:
+        - cron: "0 5 * * *"  # 5am everyday
+jobs:
+    upload-daily:
+        runs-on: ubuntu-latest
+        env:
+            DATE: ${{ vars.DATE || 'yesterday' }}
+        services:
+            redis:
+                image: redis
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+        steps:
+            - name: install gh
+              if: ${{ env.ACT }}
+              run: |
+                (type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)) \
+                && sudo mkdir -p -m 755 /etc/apt/keyrings \
+                && wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+                && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+                && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+                && sudo apt update \
+                && sudo apt install gh -y
+
+            - name: Setup Rclone 
+              uses: AnimMouse/setup-rclone@v1
+              with: 
+                rclone_config: ${{ secrets.RCLONE_CONFIG }}
+              env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            
+
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v5
+            
+            - name: Install requirements
+              run: |
+                # create a venv
+                python -m venv cxe2stix_helper-venv
+                source cxe2stix_helper-venv/bin/activate
+                # install requirements
+                pip install -r requirements.txt
+
+            - name: Run CPE2STIX & CVE2STIX
+              env:
+                REDIS_HOST: redis
+              run: |
+                source cxe2stix_helper-venv/bin/activate
+                YESTERDAY=$(date -u -d $DATE +"%Y-%m-%d")
+                python3 cxe2stix_helper.py \
+                    --run_cpe2stix \
+                    --run_cve2stix \
+                    --last_modified_earliest "$YESTERDAY"T00:00:00 \
+                    --last_modified_latest   "$YESTERDAY"T23:59:59 \
+                    --file_time_range 1d
+
+            - name: upload bundle to r2
+              run: |
+                YESTERDAY_MONTH=$(date -u -d $DATE +"%Y-%m")
+                YESTERDAY=$(date -u -d $DATE +"%Y-%m-%d")
+                rclone copy output/bundles/cve-bundle-* r2:nvd-daily-jobs/cve/$YESTERDAY_MONTH/ -v
+                rclone copy output/bundles/cpe-bundle-* r2:nvd-daily-jobs/cpe/$YESTERDAY_MONTH/ -v
