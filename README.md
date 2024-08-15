@@ -223,7 +223,7 @@ python3 cxe2stix_helper.py \
 
 If you'd like to run the action in your own repository to create your own data store you will need to do the following;
 
-First, go to Cloudflare.com and navigate to R2. Create a new bucket called `nvd-daily-jobs`.
+First, go to Cloudflare.com and navigate to R2. Create a new bucket called `cxe2stix_helper-github-action-output`.
 
 Then go to the Github repo, then `repo > settings > secrets and variables > actions > manage environment secrets`.
 
@@ -236,14 +236,14 @@ CLOUDFLARE_ACCESS_KEY_SECRET=#Get this in Cloudflare R2 UI
 NVD_API_KEY=#Get this from https://nvd.nist.gov/developers/request-an-api-key
 ```
 
-Note, for the CloudFlare API Key you create, make sure to set the permissions to `Admin Read & Write`. For security, it is also worth limiting the scope of the key to the bucket `nvd-daily-jobs` (defined in the action).
+Note, for the CloudFlare API Key you create, make sure to set the permissions to `Admin Read & Write`. For security, it is also worth limiting the scope of the key to the bucket `cxe2stix_helper-github-action-output` (defined in the action).
 
 **BACKFILL ADVICE:** due to the backfill size it will cause timeouts if you try to run it on Github. Similarly, if you set the `file_time_range` above `1d` it is likely to timeout due to data sizes. It's better to run the backfill locally and then start the automated action to backfill from backfill dayN+1.
 
 The action will store the data in the bucket as follows;
 
 ```txt
-nvd-daily-jobs
+cxe2stix_helper-github-action-output
 ├── cve
 │ 	└── 2023
 │  		└── cve-bundle-2023_01_01-2023_01_02.json
