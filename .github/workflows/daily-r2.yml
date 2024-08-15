@@ -1,4 +1,4 @@
-name: Upload to R2 Daily
+name: R2 Daily Upload
 run-name: ${{ github.actor }} is running cxe2stix
 on:
     schedule:
@@ -16,6 +16,8 @@ jobs:
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
+                ports:
+                  - 6379:6379
         steps:
             - name: install gh
               if: ${{ env.ACT }}
@@ -63,8 +65,6 @@ jobs:
                 pip install -r requirements.txt
 
             - name: Run CPE2STIX & CVE2STIX
-              env:
-                REDIS_HOST: redis
               run: |
                 source cxe2stix_helper-venv/bin/activate
                 YESTERDAY=$(date -u -d $DATE +"%Y-%m-%d")
@@ -76,8 +76,4 @@ jobs:
                     --file_time_range 1d
 
             - name: upload bundle to r2
-              run: |
-                YESTERDAY_MONTH=$(date -u -d $DATE +"%Y-%m")
-                YESTERDAY=$(date -u -d $DATE +"%Y-%m-%d")
-                rclone copy output/bundles/cve-bundle-* r2:nvd-daily-jobs/cve/$YESTERDAY_MONTH/ -v
-                rclone copy output/bundles/cpe-bundle-* r2:nvd-daily-jobs/cpe/$YESTERDAY_MONTH/ -v
+              run: rclone copy output/bundles/ r2:nvd-daily-jobs/ -v
