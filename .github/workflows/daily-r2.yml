@@ -28,10 +28,25 @@ jobs:
                 && sudo apt update \
                 && sudo apt install gh -y
 
+            - id: setup_rclone_config
+              if: ${{ !secrets.RCLONE_CONFIG }}
+              run: |
+                  rclone_config=$(echo -e '[r2]' \
+                  '\ntype = s3' \
+                    '\nprovider = Cloudflare' \
+                    '\naccess_key_id = ${{ secrets.CLOUDFLARE_ACCESS_KEY_ID }}' \
+                    '\nsecret_access_key = ${{ secrets.CLOUDFLARE_ACCESS_KEY_SECRET }}' \
+                    '\nregion = auto' \
+                    '\nendpoint = ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com' \
+                    '\nacl = private')
+                  rclone_config_b64=$(base64 -w0 <<< $rclone_config)
+                  echo "::add-mask::$rclone_config_b64"
+                  echo rclone_cf_config=$rclone_config_b64 >> $GITHUB_ENV
+
             - name: Setup Rclone 
               uses: AnimMouse/setup-rclone@v1
               with: 
-                rclone_config: ${{ secrets.RCLONE_CONFIG }}
+                rclone_config: ${{ secrets.RCLONE_CONFIG || env.rclone_cf_config }}
               env:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             
