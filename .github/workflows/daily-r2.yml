@@ -2,7 +2,7 @@ name: Upload to R2 Daily
 run-name: ${{ github.actor }} is running cxe2stix
 on:
     schedule:
-        - cron: "0 7 * * *"  # 5am everyday
+        - cron: "0 7 * * *"  # 7am everyday
 jobs:
     upload-daily:
         runs-on: ubuntu-latest
