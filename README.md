@@ -223,7 +223,7 @@ python3 cxe2stix_helper.py \
 The action will store the data in the bucket as follows;
 
 ```txt
-cxe2stix_helper-github-action-output
+cxe2stix-helper-github-action-output
 ├── cve
 │ 	└── 2023
 │  		└── cve-bundle-2023_01_01-2023_01_02.json
@@ -236,13 +236,13 @@ If you'd like to run the action in your own repository to create your own data s
 
 ### Create Cloudflare bucket/kets
 
-First, go to Cloudflare.com and navigate to R2. Create a new bucket called `cxe2stix_helper-github-action-output`.
+First, go to Cloudflare.com and navigate to R2. Create a new bucket called `cxe2stix-helper-github-action-output`.
 
 Now you need to create a CloudFlare API keys. For the CloudFlare API Key you create, make sure to set the permissions to `Admin Read & Write`. For security, it is also worth limiting the scope of the key to the bucket `cxe2stix_helper-github-action-output` (defined in the action).
 
 ### Set Github vars
 
-Then go to the Github repo, then `repo > settings > secrets and variables > actions > new repository variable`.
+Then go to the Github repo, then `repo > settings > secrets and variables > actions > new repository secret`.
 
 ![](docs/github-repo-vars.png)
 
