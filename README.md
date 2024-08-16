@@ -52,7 +52,7 @@ Where;
 	* default: none
 * `last_modified_latest` (required, date in format `YYYY-MM-DDThh:mm:ss`): used in the the cve2stix/cpe2stix config
 	* default: none
-* `file_time_range` (optional): defines how much data should be packed in each output bundle. Use `d` for days, `m` for months, `y` for years. Note for months and years, bundles are packed per calendar month / year (see examples for more info). Note, if no results are found for a time period, a bundle will not be generated. This usually explains why you see "missing" bundles for a day or month. 
+* `file_time_range` (optional): defines how much data should be packed in each output bundle. Use `d` for days, `m` for months, `y` for years. Note, if no results are found for a time period, a bundle will not be generated. This usually explains why you see "missing" bundles for a day or month. 
 	* default `1m` (1 month)
 
 Both scripts also use the following parameters that a user does not enter at the command line
@@ -103,7 +103,7 @@ Will generate 3 bundle files:
 output
 └── bundles
 	└── cve
-		└── 2023-01
+		└── 2023
 			├── cve-bundle-2023_01_01-2023_01_01.json
 			├── cve-bundle-2023_01_02-2023_01_02.json
 			└── cve-bundle-2023_01_03-2023_01_03.json
@@ -209,7 +209,6 @@ The script runs at 0700 UTC everyday (github servers UTC) using cron:  `"0 7 * *
 
 You can see the action in: `/.github/workflows/daily-r2.yml`.
 
-
 Essentially the following command is run everyday by the action
 
 ```shell
@@ -220,25 +219,6 @@ python3 cxe2stix_helper.py \
 	--last_modified_latest "YESTERDAY (23:59:59)" \
 	--file_time_range 1d
 ```
-
-If you'd like to run the action in your own repository to create your own data store you will need to do the following;
-
-First, go to Cloudflare.com and navigate to R2. Create a new bucket called `cxe2stix_helper-github-action-output`.
-
-Then go to the Github repo, then `repo > settings > secrets and variables > actions > manage environment secrets`.
-
-Then set the following;
-
-```txt
-CLOUDFLARE_ACCOUNT_ID=#Get this in Cloudflare R2 UI
-CLOUDFLARE_ACCESS_KEY_ID=#Get this in Cloudflare R2 UI
-CLOUDFLARE_ACCESS_KEY_SECRET=#Get this in Cloudflare R2 UI
-NVD_API_KEY=#Get this from https://nvd.nist.gov/developers/request-an-api-key
-```
-
-Note, for the CloudFlare API Key you create, make sure to set the permissions to `Admin Read & Write`. For security, it is also worth limiting the scope of the key to the bucket `cxe2stix_helper-github-action-output` (defined in the action).
-
-**BACKFILL ADVICE:** due to the backfill size it will cause timeouts if you try to run it on Github. Similarly, if you set the `file_time_range` above `1d` it is likely to timeout due to data sizes. It's better to run the backfill locally and then start the automated action to backfill from backfill dayN+1.
 
 The action will store the data in the bucket as follows;
 
@@ -251,6 +231,63 @@ cxe2stix_helper-github-action-output
 	  └── 2023
 	  	└── cpe-bundle-2023_01_01-2023_01_02.json
 ```
+
+If you'd like to run the action in your own repository to create your own data store you will need to do the following;
+
+### Create Cloudflare bucket/kets
+
+First, go to Cloudflare.com and navigate to R2. Create a new bucket called `cxe2stix_helper-github-action-output`.
+
+Now you need to create a CloudFlare API keys. For the CloudFlare API Key you create, make sure to set the permissions to `Admin Read & Write`. For security, it is also worth limiting the scope of the key to the bucket `cxe2stix_helper-github-action-output` (defined in the action).
+
+### Set Github vars
+
+Then go to the Github repo, then `repo > settings > secrets and variables > actions > manage environment secrets`.
+
+Then set one of the following;
+
+#### Option 1: use `CLOUDFLARE_*` vars
+
+Set the following in the secrets;
+
+```txt
+CLOUDFLARE_ACCOUNT_ID=#Get this in Cloudflare R2 UI
+CLOUDFLARE_ACCESS_KEY_ID=#Get this in Cloudflare R2 UI
+CLOUDFLARE_ACCESS_KEY_SECRET=#Get this in Cloudflare R2 UI
+NVD_API_KEY=#Get this from https://nvd.nist.gov/developers/request-an-api-key
+```
+
+You most likely want to use this approach.
+
+#### Option 2: use `RCLONE_CONFIG` var
+
+In the `RCLONE_CONFIG` var, add a valid RClone conf file (title must be `[R2]`), e.g.
+
+```
+[r2]
+type = s3
+provider = Cloudflare
+access_key_id = <ACCESS_KEY>
+secret_access_key = <SECRET_ACCESS_KEY>
+region = auto
+endpoint = https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+acl = private
+```
+
+This approach allows you to potentially use other services than just Cloudflare, if you know what you're doing.
+
+Where:
+
+* `[r2]`: A custom name(an alias) for storage service. We need to use it to operate files.
+* `type` = s3: The type of file operation API. R2 supports the S3 standard protocol.
+* `provider` = Cloudflare: The storage provider ID. You could use man rclone in your terminal to get the supported providers.
+* `access_key_id`: You need to create a token with Admin Read & Write permissions on the R2 console (note, I am not sure if this is a bug, but I couldn’t get it to work with any other permissions levels)
+* `secret_access_key`: Same as above.
+* `endpoint`: The URL that rclone uses to operate files. To get the account id on the top-right of the R2 homepage.
+
+### Backfill advicde
+
+Due to the backfill size it will cause timeouts if you try to run it on Github. Similarly, if you set the `file_time_range` above `1d` it is likely to timeout due to data sizes. It's better to run the backfill locally and then start the automated action to backfill from backfill dayN+1.
 
 ## Support
 
