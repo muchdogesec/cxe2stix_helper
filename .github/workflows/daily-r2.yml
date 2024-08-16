@@ -76,4 +76,4 @@ jobs:
                     --file_time_range 1d
 
             - name: upload bundle to r2
-              run: rclone copy output/bundles/ r2:cxe2stix_helper-github-action-output/ -v
+              run: rclone copy output/bundles/ r2:cxe2stix-helper-github-action-output/ -v

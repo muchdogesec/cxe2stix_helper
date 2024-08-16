@@ -242,9 +242,11 @@ Now you need to create a CloudFlare API keys. For the CloudFlare API Key you cre
 
 ### Set Github vars
 
-Then go to the Github repo, then `repo > settings > secrets and variables > actions > manage environment secrets`.
+Then go to the Github repo, then `repo > settings > secrets and variables > actions > new repository variable`.
 
-Then set one of the following;
+![](docs/github-repo-vars.png)
+
+Then choose one of the following options;
 
 #### Option 1: use `CLOUDFLARE_*` vars
 
