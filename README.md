@@ -103,7 +103,7 @@ Will generate 3 bundle files:
 output
 └── bundles
 	└── cve
-		└── 2023
+		└── 2023-01
 			├── cve-bundle-2023_01_01-2023_01_01.json
 			├── cve-bundle-2023_01_02-2023_01_02.json
 			└── cve-bundle-2023_01_03-2023_01_03.json
@@ -225,10 +225,10 @@ The action will store the data in the bucket as follows;
 ```txt
 cxe2stix-helper-github-action-output
 ├── cve
-│ 	└── 2023
+│ 	└── 2023-01
 │  		└── cve-bundle-2023_01_01-2023_01_02.json
 └── cpe
-	  └── 2023
+	  └── 2023-01
 	  	└── cpe-bundle-2023_01_01-2023_01_02.json
 ```
 
