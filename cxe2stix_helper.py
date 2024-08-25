@@ -63,7 +63,7 @@ def get_time_ranges(s, earliest: dt, latest: dt) -> list[tuple[dt, dt]]:
         hi = hi.replace(hour=23, minute=59, second=59)
         if hi >= latest:
             hi = latest
-        output.append((lo, hi))
+        output.append((unit, lo, hi))
         hi += ONESEC
     return output
 
@@ -122,16 +122,24 @@ def main():
 
     shutil.rmtree(PARENT_PATH, ignore_errors=True)
 
-    for start_date, end_date in get_time_ranges(file_time_range, last_modified_earliest, last_modified_latest):
+    for time_unit, start_date, end_date in get_time_ranges(file_time_range, last_modified_earliest, last_modified_latest):
         # end_date = dt.combine(end_date, dt.max.time())
         start_day, end_day = start_date.strftime('%Y_%m_%d-%H_%M_%S'), end_date.strftime('%Y_%m_%d-%H_%M_%S')
-
+        subdir = ""
+        match time_unit:
+            case 'm':
+                subdir = start_date.strftime('%Y')
+            case 'd':
+                subdir = start_date.strftime('%Y-%m')
+            case _:
+                subdir = '.'
 
         if run_cve2stix:
             file_system = OBJECTS_PARENT/f"cve_objects-{start_day}-{end_day}"
             file_system.mkdir(parents=True, exist_ok=True)
             cprocess = start_celery("cve2stix.celery", "cve2stix", env=dict(RESULTS_PER_PAGE=cve_results_per_page))
-            bundle_name = f"cve-bundle-{start_day}-{end_day}.json"
+            bundle_name = f"cve/{subdir}/cve-bundle-{start_day}-{end_day}.json"
+            (BUNDLE_PATH/bundle_name).parent.mkdir(parents=True, exist_ok=True)
             celery_task = cve2stix.main(
                 filename=bundle_name,
                 config=cve2stix.Config(
@@ -151,7 +159,8 @@ def main():
             file_system = OBJECTS_PARENT/f"cpe_objects-{start_day}-{end_day}"
             file_system.mkdir(parents=True, exist_ok=True)
             cprocess = start_celery("cpe2stix.celery", "cpe2stix", env=dict(RESULTS_PER_PAGE=cpe_results_per_page))
-            bundle_name = f"cpe-bundle-{start_day}-{end_day}.json"
+            bundle_name = f"cpe/{subdir}/cpe-bundle-{start_day}-{end_day}.json"
+            (BUNDLE_PATH/bundle_name).parent.mkdir(parents=True, exist_ok=True)
             celery_task = cpe2stix.main(
                 filename=bundle_name,
                 config=cpe2stix.Config(
