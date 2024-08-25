@@ -2,12 +2,6 @@
 
 A small wrapper to download data using cve2stix and cpe2stix, organising it into STIX bundles based on time ranges.
 
-## Before you get started
-
-If you do not want to backfill, maintain, or support your own CVE and CPE STIX objects check out CTI Butler which provides a fully manage database of these objects and more!
-
-https://www.ctibutler.com/
-
 ## Install the script
 
 ```shell
