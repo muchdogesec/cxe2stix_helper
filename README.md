@@ -1,5 +1,7 @@
 ## Overview
 
+![](docs/cve2stix.png)
+
 A small wrapper to download data using cve2stix and cpe2stix, organising it into STIX bundles based on time ranges.
 
 ## Install the script
@@ -274,14 +276,14 @@ This approach allows you to potentially use other services than just Cloudflare,
 
 Where:
 
-* `[r2]`: A custom name(an alias) for storage service. We need to use it to operate files.
+* `[r2]`: An alias for the storage service. We need to use it to operate files, should always be `[r2]`
 * `type` = s3: The type of file operation API. R2 supports the S3 standard protocol.
 * `provider` = Cloudflare: The storage provider ID. You could use man rclone in your terminal to get the supported providers.
 * `access_key_id`: You need to create a token with Admin Read & Write permissions on the R2 console (note, I am not sure if this is a bug, but I couldn’t get it to work with any other permissions levels)
 * `secret_access_key`: Same as above.
 * `endpoint`: The URL that rclone uses to operate files. To get the account id on the top-right of the R2 homepage.
 
-### Backfill advicde
+### Backfill advice
 
 Due to the backfill size it will cause timeouts if you try to run it on Github. Similarly, if you set the `file_time_range` above `1d` it is likely to timeout due to data sizes. It's better to run the backfill locally and then start the automated action to backfill from backfill dayN+1.
 
