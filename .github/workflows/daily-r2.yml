@@ -1,8 +1,13 @@
 name: R2 Daily Upload
 run-name: ${{ github.actor }} is running cxe2stix
 on:
+    workflow_dispatch:
+
     schedule:
-        - cron: "0 7 * * *"  # 7am everyday
+      - cron: "0 7 * * *"  # 7am everyday
+
+
+
 jobs:
     upload-daily:
         runs-on: ubuntu-latest
@@ -56,6 +61,8 @@ jobs:
               with:
                 submodules: 'true'
             - uses: actions/setup-python@v5
+              with:
+                python-version: 3.12
             
             - name: Install requirements
               run: |
@@ -68,6 +75,7 @@ jobs:
             - name: Run CPE2STIX & CVE2STIX
               env:
                 NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+                REDIS_HOST: 127.0.0.1
               run: |
                 source cxe2stix_helper-venv/bin/activate
                 YESTERDAY=$(date -u -d $DATE +"%Y-%m-%d")

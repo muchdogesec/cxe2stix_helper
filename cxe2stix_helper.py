@@ -108,8 +108,8 @@ def main():
     sys.path.append("cve2stix")
     import cpe2stix.main as cpe2stix
     import cve2stix.main as cve2stix
-    cve_results_per_page = os.getenv("CVE2STIX_RESULTS_PER_PAGE")
-    cpe_results_per_page = os.getenv("CPE2STIX_RESULTS_PER_PAGE")
+    cve_results_per_page = os.getenv("CVE2STIX_RESULTS_PER_PAGE", "500")
+    cpe_results_per_page = os.getenv("CPE2STIX_RESULTS_PER_PAGE", "10000")
     if run_cve2stix and not cve_results_per_page.isdigit():
         raise Exception(f"env CVE2STIX_RESULTS_PER_PAGE should be int, got {cve_results_per_page}")
     if run_cpe2stix and not cpe_results_per_page.isdigit():
