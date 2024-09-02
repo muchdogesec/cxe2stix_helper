@@ -66,6 +66,8 @@ jobs:
             
             - name: Install requirements
               run: |
+                set -e
+            
                 # create a venv
                 python -m venv cxe2stix_helper-venv
                 source cxe2stix_helper-venv/bin/activate
@@ -77,6 +79,11 @@ jobs:
                 NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
                 REDIS_HOST: 127.0.0.1
               run: |
+                set -e
+                if [[ -z "$NVD_API_KEY" ]]; then
+                   echo NVD_API_KEY must be set && exit 1
+                fi
+
                 source cxe2stix_helper-venv/bin/activate
                 YESTERDAY=$(date -u -d $DATE +"%Y-%m-%d")
                 python3 cxe2stix_helper.py \
