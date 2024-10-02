@@ -127,6 +127,9 @@ def main():
 
     shutil.rmtree(PARENT_PATH, ignore_errors=True)
 
+    start_celery("cve2stix.celery", "cve2stix")
+    start_celery("cpe2stix.celery", "cpe2stix")
+
     for time_unit, start_date, end_date in get_time_ranges(args.file_time_range, args.last_modified_earliest, args.last_modified_latest):
         start_day, end_day = start_date.strftime('%Y_%m_%d-%H_%M_%S'), end_date.strftime('%Y_%m_%d-%H_%M_%S')
         subdir = start_date.strftime('%Y-%m') if time_unit == 'd' else start_date.strftime('%Y')
@@ -135,7 +138,6 @@ def main():
             file_system = OBJECTS_PARENT / f"cve_objects-{start_day}-{end_day}"
             file_system.mkdir(parents=True, exist_ok=True)
             
-            cprocess = start_celery("cve2stix.celery", "cve2stix")
             bundle_name = f"cve/{subdir}/cve-bundle-{start_day}-{end_day}.json"
             (BUNDLE_PATH / bundle_name).parent.mkdir(parents=True, exist_ok=True)
             task = cve2stix.main(
@@ -153,13 +155,11 @@ def main():
 
             # Wait for all tasks to complete before proceeding
             task.get()  # Ensure all tasks are completed before moving to the next iteration
-            cprocess.kill()  # Now it is safe to kill the celery worker
 
         if args.run_cpe2stix:
             file_system = OBJECTS_PARENT / f"cpe_objects-{start_day}-{end_day}"
             file_system.mkdir(parents=True, exist_ok=True)
 
-            cprocess = start_celery("cpe2stix.celery", "cpe2stix")
             bundle_name = f"cpe/{subdir}/cpe-bundle-{start_day}-{end_day}.json"
             (BUNDLE_PATH / bundle_name).parent.mkdir(parents=True, exist_ok=True)
             task = cpe2stix.main(
@@ -177,7 +177,7 @@ def main():
 
             # Wait for all tasks to complete before proceeding
             task.get()  # Ensure all tasks are completed before moving to the next iteration
-            cprocess.kill()  # Now it is safe to kill the celery worker
+            
 
         # Cleanup after each iteration
         shutil.rmtree(file_system, ignore_errors=True)
