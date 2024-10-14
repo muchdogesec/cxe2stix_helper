@@ -287,6 +287,22 @@ Where:
 
 Due to the backfill size it will cause timeouts if you try to run it on Github. Similarly, if you set the `file_time_range` above `1d` it is likely to timeout due to data sizes. It's better to run the backfill locally and then start the automated action to backfill from backfill dayN+1.
 
+Here are the Rclone commands you can use to upload the backfill files downloaded locally;
+
+```shell
+rclone copy output/bundles/cpe r2:cti-public/cxe2stix-helper-github-action-output/cpe --exclude '.*{/**,}' && \
+rclone copy output/bundles/cve r2:cti-public/cxe2stix-helper-github-action-output/cve --exclude '.*{/**,}'
+```
+
+You will need to replace `cti-public` with your bucket name. `/cxe2stix-helper-github-action-output/cpe` is the path the the directory in the bucket you want to store the files.
+
+Note, the default behaviour of running this command will be to overwrite old files. If you need to delete the directories, you can use rclone to do so as follows
+
+```shell
+rclone purge r2:cti-public/cxe2stix-helper-github-action-output/cpe && \
+rclone purge r2:cti-public/cxe2stix-helper-github-action-output/cve
+```
+
 ## Support
 
 [Minimal support provided via the DOGESEC community](https://community.dogesec.com/).
