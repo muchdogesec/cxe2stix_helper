@@ -145,7 +145,11 @@ If you want to keep a copy of each individual STIX .json object, you should use 
 
 ### CVE
 
-The first CVE published was `1988-10-01T04:00:00.000`. There are 250,888 at the time of writing, and this number increasing rapidly.
+The first CVE published was `1988-10-01T04:00:00.000` (. There are 250,888 at the time of writing, and this number increasing rapidly.
+
+Note, whilst the first CVE was published in October 1988, it appears all CVEs published before 2005 were updated at the end of 2005 (or afterwards).
+
+There are more CPEs (1,267,211 currently) than CVEs but the STIX objects created from them are smaller, and thus a smaller file size. The earliest CPEs have a last modified date in 2007.
 
 Due to the volume and size of CVEs, we recommend iterating through the data in days. This means all bundles (especially those after 2018) will always be less than 10mb.
 
@@ -154,30 +158,11 @@ Here is what we use;
 ```shell
 python3 cxe2stix_helper.py \
 	--run_cve2stix \
+	--run_cpe2stix \
 	--last_modified_earliest 2005-01-01T00:00:00 \
-	--last_modified_latest 2024-01-01T23:59:59 \
+	--last_modified_latest 2024-10-14T23:59:59 \
 	--file_time_range 1d
 ``` 
-
-Note, whilst the first CVE was published in October 1988, it appears all CVEs published before 2005 were updated at the end of 2005 (or afterwards). The 
-
-Thus, the earliest CVEs have a last modified date in 2005.
-
-### CPE
-
-There are more CPEs (1,267,211 currently) than CVEs but the STIX objects created from them are smaller, and thus a smaller file size.
-
-Chunking the time range into 3 month periods will always deliver bundles less than 100mb.
-
-```shell
-python3 cxe2stix_helper.py \
-	--run_cpe2stix \
-	--last_modified_earliest 2007-01-01T00:00:00 \
-	--last_modified_latest 2024-01-01T23:59:59 \
-	--file_time_range 1d
-```
-
-The earliest CPEs have a last modified date in 2007.
 
 ## Git submodule use
 
