@@ -1,8 +1,14 @@
+# cxe2stix_helper
+
+## Before you begin
+
+We host a full web API that includes all objects created by cve2stix and cpe2stix, [Vulmatch](https://www.vulmatch.com/).
+
 ## Overview
 
 ![](docs/cve2stix.png)
 
-A small wrapper to download data using cve2stix and cpe2stix, organising it into STIX bundles based on time ranges.
+A small wrapper to download data using [cve2stix](https://github.com/muchdogesec/cve2stix/) and [cpe2stix](https://github.com/muchdogesec/cpe2stix/), organising it into STIX bundles based on time ranges.
 
 ## Install the script
 
