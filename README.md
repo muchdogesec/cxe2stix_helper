@@ -23,15 +23,17 @@ source cxe2stix_helper-venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
-## Setup configoration options
+### Configuration options
 
-You will need to create an `.env` file as follows;
+cxe2stix_helper has various settings that are defined in an `.env` file.
+
+To create a template for the file:
 
 ```shell
 cp .env.example .env
 ```
 
-You will need to set your NVD API key. You can get on for free here: https://nvd.nist.gov/developers/request-an-api-key
+To see more information about how to set the variables, and what they do, read the `.env.markdown` file.
 
 ## Usage
 
@@ -56,11 +58,6 @@ Where;
 	* default: none
 * `file_time_range` (optional): defines how much data should be packed in each output bundle. Use `d` for days, `m` for months, `y` for years. Note, if no results are found for a time period, a bundle will not be generated. This usually explains why you see "missing" bundles for a day or month. 
 	* default `1m` (1 month)
-
-Both scripts also use the following parameters that a user does not enter at the command line
-
-* `RESULTS_PER_PAGE=` parameter. The value of these is different between scripts. It is set in the `.env` file (but we don't recommend changing the defaults).
-* `NVD_API_KEY=` parameter. A user should set this value in a local `.env` file in the base of the cxe2stix_helper code. This API key can be obtained for free here: https://nvd.nist.gov/developers/start-here . Note, the scripts will work without it, but it is very likely you will run into rate limit errors, so this is HIGHLY recommended.
 
 ### Example 1: Get 3 months of CPE data (split into STIX bundles of 1 month)
 
