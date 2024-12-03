@@ -163,7 +163,7 @@ python3 cxe2stix_helper.py \
 	--run_cve2stix \
 	--run_cpe2stix \
 	--last_modified_earliest 2005-01-01T00:00:00 \
-	--last_modified_latest 2024-10-14T23:59:59 \
+	--last_modified_latest 2024-11-30T23:59:59 \
 	--file_time_range 1d
 ``` 
 
@@ -176,13 +176,14 @@ Sometimes this is not always the case (either because we've forgot, or there are
 If it's the case we've forgotten, you can update the Git Submodules in this repo as follows:
 
 ```shell
-cd cpe2stix
-git checkout main
-git pull
+cd cpe2stix && \
+git checkout main && \
+git pull && \
+cd .. && \
+cd cve2stix && \
+git checkout main && \
+git pull && \
 cd ..
-cd cve2stix
-git checkout main
-git pull
 ```
 
 ## Support for Cloudflare R2 + Github action
